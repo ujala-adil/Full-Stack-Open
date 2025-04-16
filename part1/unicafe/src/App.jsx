@@ -21,7 +21,7 @@ const App = () => {
 
 const Heading = ({ title }) => <h1>{title}</h1>
 
-const Display = ({ rating, count }) => <p>{rating} {count}</p>
+// const Display = ({ rating, count }) => <p>{rating} {count}</p>
 
 const Button = ({ onClick, text }) => <button onClick={onClick}>{text}</button>
 
@@ -30,22 +30,27 @@ const Statistics = ({ good, neutral, bad }) => {
   const average = total === 0 ? 0 : (good - bad) / total;
   const positive = total === 0 ? 0 : (good / total) * 100;
 
+
   if (total === 0) {
+    // console.log("no");
     return <p>No feedback given</p>;
   }
 
+  // console.log("yes");
   return (
-    <>
-      <Display rating="good" count={good} />
-      <Display rating="neutral" count={neutral} />
-      <Display rating="bad" count={bad} />
+    <div>
+      <StatisticLine text="good" value={good} />
+      <StatisticLine text="neutral" value={neutral} />
+      <StatisticLine text="bad" value={bad} />
 
-      <p>all {total}</p>
-      <p>average {average}</p>
-      <p>positive {positive}%</p>
-    </>
+      <StatisticLine text="all" value={total} />
+      <StatisticLine text="average" value={average} />
+      <StatisticLine text="positive" value={`${positive} %`} />
+    </div>
   )
 }
+
+const StatisticLine = ({ text, value }) => <p>{text} {value}</p>
 
 
 export default App
