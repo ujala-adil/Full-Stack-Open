@@ -17,11 +17,11 @@ const App = () => {
   return (
     <div>
       <p>{anecdotes[selected]}</p>
-      <Button onClick={() => setSelected(Math.floor(Math.random() * 10))}/>
+      <Button text="next anecdote" onClick={() => setSelected(Math.floor(Math.random() * anecdotes.length))}/>
     </div>
   )
 }
 
-const Button = ({onClick}) => <button onClick={onClick}>next anecdote</button>
+const Button = ({text, onClick}) => <button onClick={onClick}>{text}</button>
 
 export default App
