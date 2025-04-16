@@ -21,8 +21,6 @@ const App = () => {
 
 const Heading = ({ title }) => <h1>{title}</h1>
 
-// const Display = ({ rating, count }) => <p>{rating} {count}</p>
-
 const Button = ({ onClick, text }) => <button onClick={onClick}>{text}</button>
 
 const Statistics = ({ good, neutral, bad }) => {
@@ -32,25 +30,32 @@ const Statistics = ({ good, neutral, bad }) => {
 
 
   if (total === 0) {
-    // console.log("no");
     return <p>No feedback given</p>;
   }
 
-  // console.log("yes");
   return (
-    <div>
-      <StatisticLine text="good" value={good} />
-      <StatisticLine text="neutral" value={neutral} />
-      <StatisticLine text="bad" value={bad} />
+    <table>
+      <tbody>
+        <StatisticLine text="good" value={good} />
+        <StatisticLine text="neutral" value={neutral} />
+        <StatisticLine text="bad" value={bad} />
 
-      <StatisticLine text="all" value={total} />
-      <StatisticLine text="average" value={average} />
-      <StatisticLine text="positive" value={`${positive} %`} />
-    </div>
+        <StatisticLine text="all" value={total} />
+        <StatisticLine text="average" value={average} />
+        <StatisticLine text="positive" value={`${positive} %`} />
+      </tbody>
+    </table>
   )
 }
 
-const StatisticLine = ({ text, value }) => <p>{text} {value}</p>
+const StatisticLine = ({ text, value }) => {
+  return (
+    <tr>
+      <td>{text}</td>
+      <td>{value}</td>
+    </tr>
+  )
+}
 
 
 export default App
