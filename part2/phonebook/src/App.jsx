@@ -37,8 +37,8 @@ const App = () => {
           return <li key={index}>{person.name}</li>
         })} */}
 
-        {persons.map((person, index) => (
-            <li key={index}>{person.name}</li>
+        {persons.map((person) => (
+            <li key={person.name}>{person.name}</li>
         ))}
       </ul>
     </div>
