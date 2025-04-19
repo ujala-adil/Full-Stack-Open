@@ -7,14 +7,22 @@ const App = () => {
   const [newName, setNewName] = useState('')
 
   const handleOnChange = (event) => {
-    console.log(event.target.value)
+    // console.log(event.target.value)
     setNewName(event.target.value)
   }
 
   const addPerson = (event) => {
     event.preventDefault()
-    console.log('button clicked', event.target)
-    // setPersons(persons.concat(newName))
+    // console.log('button clicked', event.target)
+
+    const foundPerson = persons.find((person) => person.name === newName)
+    // console.log(foundPerson)
+
+    if (foundPerson) {
+      alert(`${newName} is already added to phonebook`)
+      return
+    }
+  
     setPersons(persons.concat({ name: newName })) //need to wrap it in an object
     setNewName('')
   }
@@ -33,12 +41,8 @@ const App = () => {
       </form>
       <h2>Numbers</h2>
       <ul>
-        {/* {persons.map((person, index) => {
-          return <li key={index}>{person.name}</li>
-        })} */}
-
-        {persons.map((person) => (
-            <li key={person.name}>{person.name}</li>
+        {persons.map((person, index) => (
+            <li key={index}>{person.name}</li>
         ))}
       </ul>
     </div>
