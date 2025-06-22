@@ -34,7 +34,7 @@ const Persons = ({ filter, persons, deletePerson }) => {
         // checks for the string to match targeted string even partially, lowercase for case insensivity
         .filter((person) => person.name.toLowerCase().includes(filter.toLowerCase()))
         .map((person) => (
-          <Person key={person.id} person={person} deletePerson={() => deletePerson(person.id)} />
+          <Person key={person.id} person={person} deletePerson={() => deletePerson(person)} />
         ))}
     </ul>
   )
@@ -114,10 +114,15 @@ const App = () => {
       })
   }
 
-  const deletePerson = (id) => {
-    console.log("Delete button clicked for id:", id)
-    personService.deletePerson(id)
-      .then(setPersons(persons.filter(person => person.id !== id))); //filter returns a new array which is the changed one based on the condition inside.
+  const deletePerson = (contact) => {
+    // console.log("Delete button clicked for id:", contact.id)
+    const confirmDelete = window.confirm(`Delete ${contact.name}?`);
+
+    if (confirmDelete) {
+      personService.deletePerson(contact.id)
+        .then(setPersons(persons.filter(person => person.id !== contact.id))); 
+        //filter returns a new array which is the changed one based on the condition inside.
+    }
   }
 
   return (
