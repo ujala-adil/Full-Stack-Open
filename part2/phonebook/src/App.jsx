@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+// import axios from 'axios'
+import personService from './services/contacts'
 
 const Filter = ({ filter, onChange }) => {
   return (
@@ -52,14 +53,13 @@ const App = () => {
   const [filter, setFilter] = useState('')
 
   useEffect(() => {
-    // console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        // console.log('promise fulfilled')
-        setPersons(response.data)
+    personService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
       })
   }, [])
+
   console.log('render', persons.length, 'persons')
 
 
@@ -99,9 +99,13 @@ const App = () => {
       id: persons.length + 1 //keeping the integer type intact as initialized
     }
 
-    setPersons(persons.concat(personObject)) //need to be an object because of the initialization type
-    setNewName('')
-    setNewNumber('')
+    personService
+      .create(personObject)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson))
+        setNewName('')
+        setNewNumber('')
+      })
   }
 
   return (
