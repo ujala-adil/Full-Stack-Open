@@ -26,7 +26,7 @@ const PersonForm = (props) => {
   )
 }
 
-const Persons = ({ filter, persons }) => {
+const Persons = ({ filter, persons, deletePerson }) => {
   return (
     <ul>
       {/* persons.filter((person) => person.name === filter) matches exactly */}
@@ -34,16 +34,22 @@ const Persons = ({ filter, persons }) => {
         // checks for the string to match targeted string even partially, lowercase for case insensivity
         .filter((person) => person.name.toLowerCase().includes(filter.toLowerCase()))
         .map((person) => (
-          <Person key={person.id} person={person} />
+          <Person key={person.id} person={person} deletePerson={() => deletePerson(person.id)} />
         ))}
     </ul>
   )
 }
 
-const Person = ({ person }) => {
+const Person = ({ person, deletePerson }) => {
   return (
-    <li>{person.name} {person.number}</li>
+    <li>
+      {person.name} {person.number} <DeleteButton deletePerson={deletePerson} />
+    </li>
   )
+}
+
+const DeleteButton = ({ deletePerson }) => {
+  return <button onClick={deletePerson}>delete</button>
 }
 
 const App = () => {
@@ -60,7 +66,7 @@ const App = () => {
       })
   }, [])
 
-  console.log('render', persons.length, 'persons')
+  // console.log('render', persons.length, 'persons')
 
 
   const handleOnNameChange = (event) => {
@@ -108,6 +114,12 @@ const App = () => {
       })
   }
 
+  const deletePerson = (id) => {
+    console.log("Delete button clicked for id:", id)
+    personService.deletePerson(id)
+      .then(setPersons(persons.filter(person => person.id !== id))); //filter returns a new array which is the changed one based on the condition inside.
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -117,7 +129,7 @@ const App = () => {
       <PersonForm addPerson={addPerson} newName={newName} newNumber={newNumber} handleOnNameChange={handleOnNameChange} handleOnNumberChange={handleOnNumberChange} />
 
       <h2>Numbers</h2>
-      <Persons filter={filter} persons={persons} />
+      <Persons filter={filter} persons={persons} deletePerson={deletePerson} />
     </div>
   )
 }
