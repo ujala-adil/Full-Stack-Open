@@ -12,7 +12,7 @@ const Filter = ({ filter, onChange }) => {
 
 const PersonForm = (props) => {
   return (
-    <form onSubmit={props.addPerson}>
+    <form onSubmit={props.addUpdatePerson}>
       <div>
         name: <input value={props.newName} onChange={props.handleOnNameChange} />
       </div>
@@ -86,7 +86,7 @@ const App = () => {
     setFilter(event.target.value)
   }
 
-  const addPerson = (event) => {
+  const addUpdatePerson = (event) => {
     event.preventDefault()
     // console.log('button clicked', event.target)
 
@@ -94,24 +94,39 @@ const App = () => {
     // console.log(foundPerson)
 
     if (foundPerson) {
-      alert(`${newName} is already added to phonebook`)
-      return
-    }
+      // alert(`${newName} is already added to phonebook`)
+      // return
 
-    const personObject = {
-      name: newName,
-      number: newNumber,
-      // id: String(persons.length + 1),
-      id: persons.length + 1 //keeping the integer type intact as initialized
-    }
+      const ifUpdate = window.confirm(`${foundPerson.name} is already added to the phonebook, replace the old number with a new one?`);
 
-    personService
-      .create(personObject)
-      .then(returnedPerson => {
-        setPersons(persons.concat(returnedPerson))
-        setNewName('')
-        setNewNumber('')
-      })
+      if (ifUpdate) {
+        const updatedPerson = { ...foundPerson, number: newNumber } //All fields are copied from foundPerson, but number is replaced with the new value.
+
+        personService
+          .updateNumber(foundPerson.id, updatedPerson)
+          .then(returnedPerson => {
+            setPersons(persons.map(p => p.id === returnedPerson.id ? returnedPerson : p)) //p.id === returnedPerson.id, it means this is the person we updated So it replaces p with returnedPerson (the updated data from the server). Otherwise, it keeps p as is. This creates a new updated array and sets it as the new persons state.
+            setNewName('')
+            setNewNumber('')
+          })
+      }
+    }
+    else {
+      const personObject = {
+        name: newName,
+        number: newNumber,
+        // id: persons.length + 1 //keeping the integer type intact as initialized
+        // //no need to add id manually as adding to server automatically appends the id property to the added object.
+      }
+
+      personService
+        .create(personObject)
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson))
+          setNewName('')
+          setNewNumber('')
+        })
+    }
   }
 
   const deletePerson = (contact) => {
@@ -120,8 +135,8 @@ const App = () => {
 
     if (confirmDelete) {
       personService.deletePerson(contact.id)
-        .then(setPersons(persons.filter(person => person.id !== contact.id))); 
-        //filter returns a new array which is the changed one based on the condition inside.
+        .then(setPersons(persons.filter(person => person.id !== contact.id)));
+      //filter returns a new array which is the changed one based on the condition inside.
     }
   }
 
@@ -131,7 +146,7 @@ const App = () => {
       <Filter filter={filter} onChange={handleOnFilterChange} />
 
       <h2>add a new</h2>
-      <PersonForm addPerson={addPerson} newName={newName} newNumber={newNumber} handleOnNameChange={handleOnNameChange} handleOnNumberChange={handleOnNumberChange} />
+      <PersonForm addUpdatePerson={addUpdatePerson} newName={newName} newNumber={newNumber} handleOnNameChange={handleOnNameChange} handleOnNumberChange={handleOnNumberChange} />
 
       <h2>Numbers</h2>
       <Persons filter={filter} persons={persons} deletePerson={deletePerson} />
