@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 // import axios from 'axios'
 import personService from './services/contacts'
+import './index.css'
+
 
 const Filter = ({ filter, onChange }) => {
   return (
@@ -52,11 +54,25 @@ const DeleteButton = ({ deletePerson }) => {
   return <button onClick={deletePerson}>delete</button>
 }
 
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className='success'>
+      {message}
+    </div>
+  )
+}
+
+
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [errorMessage, setMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -125,6 +141,13 @@ const App = () => {
           setPersons(persons.concat(returnedPerson))
           setNewName('')
           setNewNumber('')
+          setMessage(
+            `Added ${returnedPerson.name}`
+          )
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+
         })
     }
   }
@@ -143,6 +166,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={errorMessage} />
       <Filter filter={filter} onChange={handleOnFilterChange} />
 
       <h2>add a new</h2>
