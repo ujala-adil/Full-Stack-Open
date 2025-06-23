@@ -54,13 +54,13 @@ const DeleteButton = ({ deletePerson }) => {
   return <button onClick={deletePerson}>delete</button>
 }
 
-const Notification = ({ message }) => {
+const Notification = ({ message, nameOfClass }) => {
   if (message === null) {
     return null
   }
 
   return (
-    <div className='success'>
+    <div className={nameOfClass}>
       {message}
     </div>
   )
@@ -73,6 +73,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
   const [errorMessage, setMessage] = useState(null)
+  const [className, setClassName] = useState(null)
 
   useEffect(() => {
     personService
@@ -125,6 +126,15 @@ const App = () => {
             setNewName('')
             setNewNumber('')
           })
+          .catch(error => {
+            setClassName('error')
+            setMessage(
+              `Information of ${updatedPerson.name} has already been removed from the server`
+            )
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
+          });
       }
     }
     else {
@@ -141,13 +151,13 @@ const App = () => {
           setPersons(persons.concat(returnedPerson))
           setNewName('')
           setNewNumber('')
+          setClassName('success')
           setMessage(
             `Added ${returnedPerson.name}`
           )
           setTimeout(() => {
             setMessage(null)
           }, 5000)
-
         })
     }
   }
@@ -166,7 +176,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={errorMessage} />
+      <Notification message={errorMessage} nameOfClass={className} />
       <Filter filter={filter} onChange={handleOnFilterChange} />
 
       <h2>add a new</h2>
