@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 
+app.use(express.json())
 
 let persons = [
   {
@@ -25,6 +26,8 @@ let persons = [
   }
 ]
 
+
+//GET
 app.get('/api/persons', (request, response) => {
   response.json(persons)
 })
@@ -45,6 +48,34 @@ app.get('/api/persons/:id', (request, response) => {
 })
 
 
+const generateId = () => {
+  return Math.floor(Math.random() * 1000000);
+}
+
+//POST
+app.post('/api/persons', (request, response) => {
+  const person = request.body
+  // console.log(person)
+
+  if (!person.name || !person.number) {
+    return response.status(400).json({
+      error: 'name/number missing'
+    })
+  }
+
+  const personObj = {
+    name: person.name,
+    number: person.number,
+    id: generateId(),
+  }
+
+  persons = persons.concat(personObj) //missing this line does not reflect the added person on the server
+
+  response.json(personObj) //this only sends the data back to the client (e.g. browser or Postman)
+})
+
+
+// DELETE 
 app.delete('/api/persons/:id', (request, response) => {
   const id = request.params.id
   persons = persons.filter(person => person.id !== id)
