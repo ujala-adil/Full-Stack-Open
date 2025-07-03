@@ -28,18 +28,15 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.get('/api/info', (request, response) => {
-  response.send(`<p>Phonebook has info for ${persons.length} people</p><p> ${new Date()} </p>`)
+  Person.countDocuments({}).then(count => {
+    response.send(`<p>Phonebook has info for ${count} people</p><p> ${new Date()} </p>`)
+  });
 })
 
 app.get('/api/persons/:id', (request, response) => {
-  const id = request.params.id
-  const person = persons.find(person => person.id === id)
-
-  if (person) {
+  Person.findById(request.params.id).then(person => {
     response.json(person)
-  } else {
-    response.status(404).end()
-  }
+  })
 })
 
 //POST
@@ -51,7 +48,7 @@ app.post('/api/persons', (request, response) => {
       error: 'name/number missing'
     })
   }
-  
+
   const personObj = new Person({
     name: person.name,
     number: person.number
@@ -105,7 +102,7 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
-  } 
+  }
 
   next(error)
 }
