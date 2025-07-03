@@ -18,8 +18,6 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 app.use(express.static('dist')) //for frontend deployment
 //MIDDLEWARE
 
-
-
 let persons = [
   {
     "id": "1",
@@ -43,6 +41,7 @@ let persons = [
   }
 ]
 
+//GET
 app.get('/api/persons', (request, response) => {
   Person.find({}).then(persons => {
     response.json(persons)
@@ -50,15 +49,18 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.get('/api/info', (request, response) => {
-  Person.countDocuments({}).then(count => {
-    response.send(`<p>Phonebook has info for ${count} people</p><p> ${new Date()} </p>`)
-  });
+  response.send(`<p>Phonebook has info for ${persons.length} people</p><p> ${new Date()} </p>`)
 })
 
 app.get('/api/persons/:id', (request, response) => {
-  Person.findById(request.params.id).then(person => {
+  const id = request.params.id
+  const person = persons.find(person => person.id === id)
+
+  if (person) {
     response.json(person)
-  })
+  } else {
+    response.status(404).end()
+  }
 })
 
 //POST
@@ -89,10 +91,11 @@ app.post('/api/persons', (request, response) => {
 
 // DELETE 
 app.delete('/api/persons/:id', (request, response) => {
-  const id = request.params.id
-  persons = persons.filter(person => person.id !== id)
-
-  response.status(204).end()
+  Person.findByIdAndDelete(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 const PORT = process.env.PORT
