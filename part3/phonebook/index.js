@@ -1,6 +1,5 @@
 require('dotenv').config()
 const express = require('express')
-const morgan = require('morgan')
 const Person = require('./models/person')
 
 
@@ -18,38 +17,8 @@ const requestLogger = (request, response, next) => {
   next()
 }
 app.use(requestLogger)
-
-// app.use(morgan('tiny'));
-// morgan.token('body', (req) => {
-//   return req.method === 'POST' ? JSON.stringify(req.body) : ''
-// })
-// app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
-
-
 //MIDDLEWARE
 
-let persons = [
-  {
-    "id": "1",
-    "name": "Arto Hellas",
-    "number": "040-123456"
-  },
-  {
-    "id": "2",
-    "name": "Ada Lovelace",
-    "number": "39-44-5323523"
-  },
-  {
-    "id": "3",
-    "name": "Dan Abramov",
-    "number": "12-43-234345"
-  },
-  {
-    "id": "4",
-    "name": "Mary Poppendieck",
-    "number": "39-23-6423122"
-  }
-]
 
 //GET
 app.get('/api/persons', (request, response) => {
@@ -82,12 +51,7 @@ app.post('/api/persons', (request, response) => {
       error: 'name/number missing'
     })
   }
-  else if (persons.find(p => p.name === person.name)) {
-    return response.status(400).json({
-      error: 'name must be unique'
-    })
-  }
-
+  
   const personObj = new Person({
     name: person.name,
     number: person.number
@@ -108,7 +72,28 @@ app.delete('/api/persons/:id', (request, response) => {
     .catch(error => next(error))
 })
 
+//PUT
+app.put('/api/persons/:id', (request, response, next) => {
+  const { name, number } = request.body
 
+  Person.findById(request.params.id)
+    .then(person => {
+      if (!person) {
+        return response.status(404).end()
+      }
+
+      person.name = name
+      person.number = number
+
+      return person.save().then((updatedPerson) => {
+        response.json(updatedPerson)
+      })
+    })
+    .catch(error => next(error))
+})
+
+
+//MIDDLEWARE
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
