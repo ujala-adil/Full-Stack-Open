@@ -7,15 +7,25 @@ const Person = require('./models/person')
 const app = express()
 
 //MIDDLEWARE
+app.use(express.static('dist')) //for frontend deployment
 app.use(express.json())
 
-// app.use(morgan('tiny'));
-morgan.token('body', (req) => {
-  return req.method === 'POST' ? JSON.stringify(req.body) : ''
-})
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
+const requestLogger = (request, response, next) => {
+  console.log('Method:', request.method)
+  console.log('Path:  ', request.path)
+  console.log('Body:  ', request.body)
+  console.log('---')
+  next()
+}
+app.use(requestLogger)
 
-app.use(express.static('dist')) //for frontend deployment
+// app.use(morgan('tiny'));
+// morgan.token('body', (req) => {
+//   return req.method === 'POST' ? JSON.stringify(req.body) : ''
+// })
+// app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
+
+
 //MIDDLEWARE
 
 let persons = [
@@ -97,6 +107,26 @@ app.delete('/api/persons/:id', (request, response) => {
     })
     .catch(error => next(error))
 })
+
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+app.use(unknownEndpoint) // handler of requests with unknown endpoint
+
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+
+  next(error)
+}
+app.use(errorHandler)// handler of requests with result to errors
+//MIDDLEWARE
+
 
 const PORT = process.env.PORT
 app.listen(PORT)
