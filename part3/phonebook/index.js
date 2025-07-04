@@ -12,7 +12,7 @@ app.use(express.json())
 const requestLogger = (request, response, next) => {
   console.log('Method:', request.method)
   console.log('Path:  ', request.path)
-  console.log('Body:  ', request.body) //printing during POST call
+  console.log('Body:  ', request.body) //printing during POST and PUT calls
   console.log('---')
   next()
 }
