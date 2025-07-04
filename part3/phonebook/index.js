@@ -12,7 +12,7 @@ app.use(express.json())
 const requestLogger = (request, response, next) => {
   console.log('Method:', request.method)
   console.log('Path:  ', request.path)
-  console.log('Body:  ', request.body)
+  console.log('Body:  ', request.body) //printing during POST call
   console.log('---')
   next()
 }
@@ -40,7 +40,7 @@ app.get('/api/persons/:id', (request, response) => {
 })
 
 //POST
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const person = request.body
 
   if (!person.name || !person.number) {
@@ -57,15 +57,6 @@ app.post('/api/persons', (request, response) => {
   personObj.save().then(savedPerson => {
     response.json(savedPerson) //saved person is sent back as the response.
   })
-})
-
-
-// DELETE 
-app.delete('/api/persons/:id', (request, response) => {
-  Person.findByIdAndDelete(request.params.id)
-    .then(result => {
-      response.status(204).end()
-    })
     .catch(error => next(error))
 })
 
@@ -89,6 +80,15 @@ app.put('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
+// DELETE 
+app.delete('/api/persons/:id', (request, response) => {
+  Person.findByIdAndDelete(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
+})
+
 
 //MIDDLEWARE
 const unknownEndpoint = (request, response) => {
@@ -102,6 +102,8 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
 
   next(error)
