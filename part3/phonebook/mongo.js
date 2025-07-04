@@ -1,3 +1,6 @@
+
+//NO LONDER USING THIS FILE
+//THIS FILE WAS FOR AND LAST USED IN EX: 3.12 COMMAND-LINE DATABASE
 const mongoose = require('mongoose')
 
 if (process.argv.length < 3) {
