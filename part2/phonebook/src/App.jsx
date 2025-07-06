@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-// import axios from 'axios'
 import personService from './services/contacts'
 import './index.css'
 
@@ -112,9 +111,6 @@ const App = () => {
     // console.log(foundPerson)
 
     if (foundPerson) {
-      // alert(`${newName} is already added to phonebook`)
-      // return
-
       const ifUpdate = window.confirm(`${foundPerson.name} is already added to the phonebook, replace the old number with a new one?`);
 
       if (ifUpdate) {
@@ -130,7 +126,7 @@ const App = () => {
           .catch(error => {
             setClassName('error')
             setMessage(
-              `Information of ${updatedPerson.name} has already been removed from the server`
+              `Information of ${updatedPerson.name} has already been removed from the server. ${error}`
             )
             setTimeout(() => {
               setMessage(null)
@@ -141,9 +137,7 @@ const App = () => {
     else {
       const personObject = {
         name: newName,
-        number: newNumber,
-        // id: persons.length + 1 //keeping the integer type intact as initialized
-        // //no need to add id manually as adding to server automatically appends the id property to the added object.
+        number: newNumber
       }
 
       personService
