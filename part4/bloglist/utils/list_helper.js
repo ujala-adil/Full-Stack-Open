@@ -8,6 +8,7 @@ const dummy = (blogs) => {
 const totalLikes = (blogs) => {
   let sum = 0;
   logger.info(blogs)
+
   if (blogs.length === 1) {
     sum = blogs[0].likes
   }
@@ -21,6 +22,12 @@ const totalLikes = (blogs) => {
   return sum
 }
 
+const favoriteBlog = (blogs) => {
+  return blogs.reduce((favBlog, currentBlog) => {
+    return currentBlog.likes > favBlog.likes ? currentBlog : favBlog
+  })
+}
+
 module.exports = {
-  dummy, totalLikes
+  dummy, totalLikes, favoriteBlog
 }
