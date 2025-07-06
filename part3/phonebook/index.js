@@ -30,7 +30,7 @@ app.get('/api/persons', (request, response) => {
 app.get('/api/info', (request, response) => {
   Person.countDocuments({}).then(count => {
     response.send(`<p>Phonebook has info for ${count} people</p><p> ${new Date()} </p>`)
-  });
+  })
 })
 
 app.get('/api/persons/:id', (request, response) => {
@@ -80,10 +80,10 @@ app.put('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-// DELETE 
-app.delete('/api/persons/:id', (request, response) => {
+// DELETE
+app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
