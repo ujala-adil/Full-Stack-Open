@@ -41,7 +41,7 @@ const mostBlogs = (blogs) => {
   // _.maxBy(..., callback) -> finds the author name whose count is highest, by passing each author to blogCounts[author].
   // Final result: 'Robert C. Martin'
 
-  logger.info(`${blogCounts[topAuthor]} ${topAuthor}`);
+  // logger.info(`${blogCounts[topAuthor]} ${topAuthor}`);
 
   return {
     author: topAuthor,
@@ -49,6 +49,48 @@ const mostBlogs = (blogs) => {
   }
 }
 
+// function sum(n) {
+//   //  logger.info(n) //n is one object
+//   // logger.info(n.b)
+
+//   let sum = 0;
+//   const reducer = (total, blog) => {
+//     logger.info(blog.b)
+//     return total + blog.b
+//   }
+//   sum = n.reduce(reducer, 0)
+
+//   logger.info(sum)
+//   return sum
+//   // return n.reduce((sum, blog) => sum + blog.likes, 0)
+// }
+
+const mostLikes = (blogs) => {
+
+  let groupedBlogs = _(blogs).groupBy('author').value()
+  // logger.info(groupedBlogs)
+
+  // let exaample = _.map({ 'a': 4, 'b': 8 }, square)
+  // let exaample = _.mapValues(blogs, sum)
+  // logger.info(exaample)
+
+  // let sumByBlog = _(blogs).sumBy('likes')
+  // logger.info(sumByBlog)
+
+  const likesPerAuthor = _.mapValues(groupedBlogs, (blog) => _.sumBy(blog, 'likes'));
+  logger.info(likesPerAuthor)
+
+  let maxLikes = Math.max(...Object.values(likesPerAuthor))
+  logger.info(maxLikes)
+
+  const topAuthor = Object.keys(likesPerAuthor).find(author => likesPerAuthor[author] === maxLikes);
+
+  return {
+    author: topAuthor,
+    likes: maxLikes
+  }
+}
+
 module.exports = {
-  dummy, totalLikes, favoriteBlog, mostBlogs
+  dummy, totalLikes, favoriteBlog, mostBlogs, mostLikes
 }
