@@ -11,13 +11,13 @@ const initialBlogs = [
         author: 'Brad Pitt',
         title: 'How to make movies',
         url: 'www.google.com',
-        likes: 3,
+        likes: 3
     },
     {
         author: 'Lara Kroft',
         title: 'What is so good in Tomb Raider?',
         url: 'www.google.com',
-        likes: 2,
+        likes: 2
     }
 ]
 
@@ -30,14 +30,14 @@ beforeEach(async () => {
     await Promise.all(promiseArray)
 })
 
-test.only('blogs are returned as json', async () => {
+test('blogs are returned as json', async () => {
     await api
         .get('/api/blogs')
         .expect(200)
         .expect('Content-Type', /application\/json/)
 })
 
-test.only('unique identifier property of blog posts is named as id', async () => {
+test('unique identifier property of blog posts is named as id', async () => {
     const response = await api.get('/api/blogs');
 
     const blogs = response.body;
@@ -47,6 +47,28 @@ test.only('unique identifier property of blog posts is named as id', async () =>
     assert.strictEqual(isNameId, true);
 });
 
+test.only('a blog can be added ', async () => {
+    const newBlog = {
+        author: 'Peter Parker',
+        title: 'How to survive in the middle of the sea',
+        url: 'www.whatever.com',
+        likes: 10
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+    const response = await api.get('/api/blogs')
+
+    const authors = response.body.map(r => r.author)
+
+    assert.strictEqual(response.body.length, initialBlogs.length + 1)
+
+    assert(authors.includes('Peter Parker'))
+})
 
 after(async () => {
     await mongoose.connection.close()
