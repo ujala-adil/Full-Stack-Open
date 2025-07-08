@@ -10,13 +10,13 @@ const initialBlogs = [
     {
         author: 'Brad Pitt',
         title: 'How to make movies',
-        url: 'www.google.com',
+        url: 'www.movies.com',
         likes: 3
     },
     {
         author: 'Lara Kroft',
         title: 'What is so good in Tomb Raider?',
-        url: 'www.google.com',
+        url: 'www.games.com',
         likes: 2
     }
 ]
@@ -47,11 +47,11 @@ test('unique identifier property of blog posts is named as id', async () => {
     assert.strictEqual(isNameId, true);
 });
 
-test.only('a blog can be added ', async () => {
+test('a blog can be added ', async () => {
     const newBlog = {
         author: 'Peter Parker',
         title: 'How to survive in the middle of the sea',
-        url: 'www.whatever.com',
+        url: 'www.seamiddle.com',
         likes: 10
     }
 
@@ -69,6 +69,25 @@ test.only('a blog can be added ', async () => {
 
     assert(authors.includes('Peter Parker'))
 })
+
+test.only('blog without likes property has 0 likes by default', async () => {
+    const newBlog = {
+        author: 'Brianne Howey',
+        title: 'How to be a good mother',
+        url: 'www.mother.com'
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/);
+
+    const response = await api.get('/api/blogs')
+    const savedBlog = response.body.find(b => b.url === newBlog.url);
+    assert.strictEqual(savedBlog.likes, 0);
+})
+
 
 after(async () => {
     await mongoose.connection.close()
