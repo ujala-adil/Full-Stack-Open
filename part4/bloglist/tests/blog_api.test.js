@@ -3,41 +3,28 @@ const assert = require('node:assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
+const helper = require('./test_helper')
 const Blog = require('../models/blog')
-const api = supertest(app)
 
-const initialBlogs = [
-    {
-        author: 'Brad Pitt',
-        title: 'How to make movies',
-        url: 'www.movies.com',
-        likes: 3
-    },
-    {
-        author: 'Lara Kroft',
-        title: 'What is so good in Tomb Raider?',
-        url: 'www.games.com',
-        likes: 2
-    }
-]
+const api = supertest(app)
 
 beforeEach(async () => {
     await Blog.deleteMany({})
 
-    const blogObjects = initialBlogs
+    const blogObjects = helper.initialBlogs
         .map(blog => new Blog(blog))
     const promiseArray = blogObjects.map(blog => blog.save())
     await Promise.all(promiseArray)
 })
 
-test('blogs are returned as json', async () => {
+test.only('blogs are returned as json', async () => {
     await api
         .get('/api/blogs')
         .expect(200)
         .expect('Content-Type', /application\/json/)
 })
 
-test('unique identifier property of blog posts is named as id', async () => {
+test.only('unique identifier property of blog posts is named as id', async () => {
     const response = await api.get('/api/blogs');
 
     const blogs = response.body;
@@ -45,9 +32,9 @@ test('unique identifier property of blog posts is named as id', async () => {
     //   console.log(keys)
     const isNameId = keys.includes('id');
     assert.strictEqual(isNameId, true);
-});
+})
 
-test('a blog can be added ', async () => {
+test.only('a blog can be added ', async () => {
     const newBlog = {
         author: 'Peter Parker',
         title: 'How to survive in the middle of the sea',
@@ -61,16 +48,14 @@ test('a blog can be added ', async () => {
         .expect(201)
         .expect('Content-Type', /application\/json/)
 
-    const response = await api.get('/api/blogs')
+    const blogsAtEnd = await helper.blogsInDb()
+    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
 
-    const authors = response.body.map(r => r.author)
-
-    assert.strictEqual(response.body.length, initialBlogs.length + 1)
-
+    const authors = blogsAtEnd.map(r => r.author)
     assert(authors.includes('Peter Parker'))
 })
 
-test('blog without likes property has 0 likes by default', async () => {
+test.only('blog without likes property has 0 likes by default', async () => {
     const newBlog = {
         author: 'Brianne Howey',
         title: 'How to be a good mother',
@@ -100,9 +85,9 @@ test.only('blog without title property is not added', async () => {
         .send(newBlog)
         .expect(400)
 
-    const response = await api.get('/api/blogs')
+    const blogsAtEnd = await helper.blogsInDb()
 
-    assert.strictEqual(response.body.length, initialBlogs.length)
+    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
 })
 
 test.only('blog without url property is not added', async () => {
@@ -117,9 +102,9 @@ test.only('blog without url property is not added', async () => {
         .send(newBlog)
         .expect(400)
 
-    const response = await api.get('/api/blogs')
+    const blogsAtEnd = await helper.blogsInDb()
 
-    assert.strictEqual(response.body.length, initialBlogs.length)
+    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
 })
 
 
