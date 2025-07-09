@@ -70,7 +70,7 @@ test('a blog can be added ', async () => {
     assert(authors.includes('Peter Parker'))
 })
 
-test.only('blog without likes property has 0 likes by default', async () => {
+test('blog without likes property has 0 likes by default', async () => {
     const newBlog = {
         author: 'Brianne Howey',
         title: 'How to be a good mother',
@@ -86,6 +86,40 @@ test.only('blog without likes property has 0 likes by default', async () => {
     const response = await api.get('/api/blogs')
     const savedBlog = response.body.find(b => b.url === newBlog.url);
     assert.strictEqual(savedBlog.likes, 0);
+})
+
+test.only('blog without title property is not added', async () => {
+    const newBlog = {
+        author: 'Mr. Nobody',
+        url: 'www.nothing.com',
+        likes: 20
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+
+    const response = await api.get('/api/blogs')
+
+    assert.strictEqual(response.body.length, initialBlogs.length)
+})
+
+test.only('blog without url property is not added', async () => {
+    const newBlog = {
+        author: 'Mr. Nobody',
+        title: 'How to not do anything',
+        likes: 20
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+
+    const response = await api.get('/api/blogs')
+
+    assert.strictEqual(response.body.length, initialBlogs.length)
 })
 
 
