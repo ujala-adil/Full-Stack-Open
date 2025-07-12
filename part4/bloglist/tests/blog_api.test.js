@@ -8,7 +8,7 @@ const Blog = require('../models/blog')
 
 const api = supertest(app)
 
-describe('when there is initially some notes saved', () => {
+describe('when there is initially some blogs saved', () => {
     beforeEach(async () => {
         await Blog.deleteMany({})
 
@@ -36,7 +36,7 @@ describe('when there is initially some notes saved', () => {
         assert.strictEqual(isNameId, true);
     })
 
-    describe('addition of a new note', () => {
+    describe('addition of a new blog', () => {
 
         test('a blog can be added ', async () => {
             const newBlog = {
