@@ -19,7 +19,8 @@ blogsRouter.get('/:id', async (request, response) => {
 blogsRouter.post('/', async (request, response) => {
     const body = request.body
 
-    const user = await User.findById(body.userId)
+    const users = await User.find({})
+    const user = users[0]
 
     if (!user) {
         return response.status(400).json({ error: 'userId missing or not valid' })
