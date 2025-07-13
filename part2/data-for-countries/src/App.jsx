@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import countryService from './services/countries'
+import weatherService from './services/weather'
 import './index.css'
 
 const Filter = ({ filter, onChange }) => {
@@ -35,6 +36,20 @@ const Countries = ({ filter, countries, showCountry }) => {
 }
 
 const Country = ({ country }) => {
+  const [weather, setWeather] = useState(null)
+
+  useEffect(() => {
+    weatherService
+      .getWeather(country.latlng[0], country.latlng[1])
+      .then(initialWeather => setWeather(initialWeather))
+  }, [country.latlng])
+
+  // useEffect(() => {
+  //   weatherService
+  //     .getWeather(country.capital[0])
+  //     .then(initialWeather => setWeather(initialWeather))
+  // }, [country.capital])
+
   return (
     <div>
       <h1>{country.name.common}</h1>
@@ -49,6 +64,21 @@ const Country = ({ country }) => {
       </ul>
 
       <img src={country.flags.png} alt={`Flag of ${country.name.common}`} width="150" />
+
+      {weather ?
+        <>
+          <h2>Weather in {country.capital[0]}</h2>
+          <p>Temperature {weather.main.temp} Celsius</p>
+          <img
+            src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
+            alt={weather.weather[0].description}
+          />
+          <p>Wind {weather.wind.speed} m/s</p>
+        </>
+        :
+        null
+      }
+
     </div>
   )
 }
@@ -83,7 +113,6 @@ const App = () => {
     <div>
       <Filter filter={filter} onChange={handleOnFilterChange} />
 
-      <h2>Countries:</h2>
       <Countries filter={filter} countries={countries} showCountry={showCountry} />
       {selectedCountry && <Country country={selectedCountry} />}
     </div>
