@@ -10,7 +10,7 @@ const Filter = ({ filter, onChange }) => {
   )
 }
 
-const Countries = ({ filter, countries }) => {
+const Countries = ({ filter, countries, showCountry }) => {
   let filteredCountries = countries.filter((country) => country.name.common.toLowerCase().includes(filter.toLowerCase()))
 
   if (filteredCountries === '') {
@@ -28,7 +28,7 @@ const Countries = ({ filter, countries }) => {
   return (
     <ul>
       {filteredCountries.map((country) => (
-        <li key={country.cca3}>{country.name.common}</li>
+        <li key={country.cca3}>{country.name.common} <ShowButton showCountry={() => showCountry(country)} /></li>
       ))}
     </ul>
   )
@@ -53,10 +53,14 @@ const Country = ({ country }) => {
   )
 }
 
+const ShowButton = ({ showCountry }) => {
+  return <button onClick={showCountry}>Show</button>
+}
 
 const App = () => {
   const [countries, setCountries] = useState([])
   const [filter, setFilter] = useState('')
+  const [selectedCountry, setSelectedCountry] = useState(null)
 
   useEffect(() => {
     countryService
@@ -68,6 +72,11 @@ const App = () => {
 
   const handleOnFilterChange = (event) => {
     setFilter(event.target.value)
+    setSelectedCountry(null)
+  }
+
+  const showCountry = (country) => {
+    setSelectedCountry(country)
   }
 
   return (
@@ -75,7 +84,8 @@ const App = () => {
       <Filter filter={filter} onChange={handleOnFilterChange} />
 
       <h2>Countries:</h2>
-      <Countries filter={filter} countries={countries} />
+      <Countries filter={filter} countries={countries} showCountry={showCountry} />
+      {selectedCountry && <Country country={selectedCountry} />}
     </div>
   )
 }
