@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -10,10 +11,10 @@ const App = () => {
     author: '',
     url: ''
   })
-  const [errorMessage, setErrorMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [notification, setNotification] = useState({ message: null })
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -30,6 +31,13 @@ const App = () => {
     }
   }, [])
 
+  const notifyWith = (message, isError = false) => {
+    setNotification({ message, isError })
+    setTimeout(() => {
+      setNotification({ message: null })
+    }, 5000)
+  }
+
   const addBlog = (event) => {
     event.preventDefault()
     const blogObject = {
@@ -44,6 +52,7 @@ const App = () => {
       .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
         setNewBlog({ title: '', author: '', url: '' })
+        notifyWith(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`, false)
       })
   }
 
@@ -73,10 +82,7 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setErrorMessage('Wrong credentials')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      notifyWith('wrong username or password', true)
     }
   }
 
@@ -140,11 +146,14 @@ const App = () => {
       {user === null ?
         <div>
           <h2>Log in to application</h2>
+          <Notification notification={notification} />
           {loginForm()}
         </div>
         :
         <div>
-          <p>{user.name} logged-in</p>
+          <h2>blogs</h2>
+          <Notification notification={notification} />
+          {user.name} logged-in
           <button type="submit" onClick={handleLogout}>logout</button>
           <h2>create new</h2>
           {blogForm()}
