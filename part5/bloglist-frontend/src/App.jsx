@@ -35,6 +35,15 @@ const App = () => {
     }, 5000)
   }
 
+  const changeBlogLikes = (id, updatedBlog) => {
+    blogService
+      .updateLikes(id, updatedBlog)
+      .then(returnedBlog => {
+        setBlogs(blogs.map(b => b.id !== id ? b : returnedBlog))
+        notifyWith(`the likes for the blog ${returnedBlog.title} by ${returnedBlog.author} has been updated`, false)
+      })
+  }
+
   const addBlog = (blogObject) => {
 
     blogFormRef.current.toggleVisibility() //hide blog form after new blog is added
@@ -125,7 +134,7 @@ const App = () => {
           <h2>create new</h2>
           {blogForm()}
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
+            <Blog key={blog.id} blog={blog} changeBlogLikes={changeBlogLikes} />
           )}
         </div>
       }
