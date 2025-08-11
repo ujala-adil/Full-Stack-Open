@@ -8,11 +8,6 @@ import BlogForm from './components/BlogForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [newBlog, setNewBlog] = useState({
-    title: '',
-    author: '',
-    url: ''
-  })
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -40,14 +35,7 @@ const App = () => {
     }, 5000)
   }
 
-  const addBlog = (event) => {
-    event.preventDefault()
-    const blogObject = {
-      author: newBlog.author,
-      url: newBlog.url,
-      title: newBlog.title,
-      likes: 0,
-    }
+  const addBlog = (blogObject) => {
 
     blogFormRef.current.toggleVisibility() //hide blog form after new blog is added
 
@@ -55,17 +43,8 @@ const App = () => {
       .create(blogObject)
       .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
-        setNewBlog({ title: '', author: '', url: '' })
         notifyWith(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`, false)
       })
-  }
-
-  const handleBlogChange = (event) => {
-    const { name, value } = event.target
-    setNewBlog({
-      ...newBlog,
-      [name]: value
-    })
   }
 
   const handleLogin = async (event) => {
@@ -125,11 +104,7 @@ const App = () => {
 
   const blogForm = () => (
     <Togglable buttonLabel="new blog" ref={blogFormRef}>
-      <BlogForm
-        onSubmit={addBlog}
-        value={newBlog}
-        handleChange={handleBlogChange}
-      />
+      <BlogForm createBlog={addBlog} />
     </Togglable>
   )
 
