@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import BlogForm from './components/BlogForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -46,6 +48,8 @@ const App = () => {
       title: newBlog.title,
       likes: 0,
     }
+
+    blogFormRef.current.toggleVisibility() //hide blog form after new blog is added
 
     blogService
       .create(blogObject)
@@ -117,28 +121,16 @@ const App = () => {
     </form>
   )
 
+  const blogFormRef = useRef()
+
   const blogForm = () => (
-    <form onSubmit={addBlog}>
-      title: <input
-        name="title"
-        value={newBlog.title}
-        onChange={handleBlogChange}
+    <Togglable buttonLabel="new blog" ref={blogFormRef}>
+      <BlogForm
+        onSubmit={addBlog}
+        value={newBlog}
+        handleChange={handleBlogChange}
       />
-      <br />
-      author: <input
-        name="author"
-        value={newBlog.author}
-        onChange={handleBlogChange}
-      />
-      <br />
-      url: <input
-        name="url"
-        value={newBlog.url}
-        onChange={handleBlogChange}
-      />
-      <br />
-      <button type="submit">create</button>
-    </form>
+    </Togglable>
   )
 
   return (
