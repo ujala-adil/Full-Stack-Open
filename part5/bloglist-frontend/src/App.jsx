@@ -56,6 +56,20 @@ const App = () => {
       })
   }
 
+  const deleteBlog = (blog) => {
+
+    const confirmDelete = window.confirm(`Delete ${blog.title}?`);
+
+    if (confirmDelete) {
+      blogService
+        .deleteBlog(blog.id)
+        .then(() => {
+          setBlogs(blogs.filter(b => b.id !== blog.id)) //remove blog from the list //filter returns a new array which is the changed one based on the condition inside.
+          notifyWith(`the blog ${blog.title} by ${blog.author} removed`, false)
+        })
+    }
+  }
+
   const handleLogin = async (event) => {
     event.preventDefault()
 
@@ -134,7 +148,7 @@ const App = () => {
           <h2>create new</h2>
           {blogForm()}
           {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
-            <Blog key={blog.id} blog={blog} changeBlogLikes={changeBlogLikes} />
+            <Blog key={blog.id} blog={blog} user={user} changeBlogLikes={changeBlogLikes} deleteBlog={deleteBlog} />
           )}
         </div>
       }
