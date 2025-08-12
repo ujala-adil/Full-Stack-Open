@@ -5,6 +5,7 @@ import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import BlogForm from './components/BlogForm'
+import LoginForm from './components/LoginForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -14,9 +15,7 @@ const App = () => {
   const [notification, setNotification] = useState({ message: null })
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
+    blogService.getAll().then((blogs) => setBlogs(blogs))
   }, [])
 
   useEffect(() => {
@@ -36,37 +35,35 @@ const App = () => {
   }
 
   const changeBlogLikes = (id, updatedBlog) => {
-    blogService
-      .updateLikes(id, updatedBlog)
-      .then(returnedBlog => {
-        setBlogs(blogs.map(b => b.id !== id ? b : returnedBlog))
-        notifyWith(`the likes for the blog ${returnedBlog.title} by ${returnedBlog.author} has been updated`, false)
-      })
+    blogService.updateLikes(id, updatedBlog).then((returnedBlog) => {
+      setBlogs(blogs.map((b) => (b.id !== id ? b : returnedBlog)))
+      notifyWith(
+        `the likes for the blog ${returnedBlog.title} by ${returnedBlog.author} has been updated`,
+        false,
+      )
+    })
   }
 
   const addBlog = (blogObject) => {
-
     blogFormRef.current.toggleVisibility() //hide blog form after new blog is added
 
-    blogService
-      .create(blogObject)
-      .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog))
-        notifyWith(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`, false)
-      })
+    blogService.create(blogObject).then((returnedBlog) => {
+      setBlogs(blogs.concat(returnedBlog))
+      notifyWith(
+        `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+        false,
+      )
+    })
   }
 
   const deleteBlog = (blog) => {
-
-    const confirmDelete = window.confirm(`Delete ${blog.title}?`);
+    const confirmDelete = window.confirm(`Delete ${blog.title}?`)
 
     if (confirmDelete) {
-      blogService
-        .deleteBlog(blog.id)
-        .then(() => {
-          setBlogs(blogs.filter(b => b.id !== blog.id)) //remove blog from the list //filter returns a new array which is the changed one based on the condition inside.
-          notifyWith(`the blog ${blog.title} by ${blog.author} removed`, false)
-        })
+      blogService.deleteBlog(blog.id).then(() => {
+        setBlogs(blogs.filter((b) => b.id !== blog.id)) //remove blog from the list //filter returns a new array which is the changed one based on the condition inside.
+        notifyWith(`the blog ${blog.title} by ${blog.author} removed`, false)
+      })
     }
   }
 
@@ -75,14 +72,13 @@ const App = () => {
 
     try {
       const user = await loginService.login({
-        username, password,
+        username,
+        password,
       })
 
-      window.localStorage.setItem(
-        'loggedBlogappUser', JSON.stringify(user)
-      )
+      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
 
-      // console.log(user);
+      // console.log(user)
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
@@ -96,65 +92,54 @@ const App = () => {
     event.preventDefault()
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
-
   }
-
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>
-        username
-        <input
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        password
-        <input
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button type="submit">login</button>
-    </form>
-  )
 
   const blogFormRef = useRef()
 
   const blogForm = () => (
-    <Togglable buttonLabel="new blog" ref={blogFormRef}>
+    <Togglable buttonLabel='new blog' ref={blogFormRef}>
       <BlogForm createBlog={addBlog} />
     </Togglable>
   )
 
   return (
     <div>
-      {user === null ?
+      {user === null ? (
         <div>
-          <h2>Log in to application</h2>
           <Notification notification={notification} />
-          {loginForm()}
+          <LoginForm
+            username={username}
+            password={password}
+            handleUsernameChange={({ target }) => setUsername(target.value)}
+            handlePasswordChange={({ target }) => setPassword(target.value)}
+            handleSubmit={handleLogin}
+          />
         </div>
-        :
+      ) : (
         <div>
           <h2>blogs</h2>
           <Notification notification={notification} />
           {user.name} logged-in
-          <button type="submit" onClick={handleLogout}>logout</button>
+          <button type='submit' onClick={handleLogout}>
+            logout
+          </button>
           <h2>create new</h2>
           {blogForm()}
-          {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
-            <Blog key={blog.id} blog={blog} user={user} changeBlogLikes={changeBlogLikes} deleteBlog={deleteBlog} />
-          )}
+          {blogs
+            .sort((a, b) => b.likes - a.likes)
+            .map((blog) => (
+              <Blog
+                key={blog.id}
+                blog={blog}
+                user={user}
+                changeBlogLikes={changeBlogLikes}
+                deleteBlog={deleteBlog}
+              />
+            ))}
         </div>
-      }
+      )}
     </div>
   )
 }
-
 
 export default App

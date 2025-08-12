@@ -8,7 +8,7 @@ const Blog = ({ blog, user, deleteBlog, changeBlogLikes }) => {
     paddingLeft: 2,
     border: 'solid',
     borderWidth: 1,
-    marginBottom: 5
+    marginBottom: 5,
   }
 
   const detailedBlogVisible = { display: blogVisible ? '' : 'none' } //when true detailed blog displayed
@@ -18,14 +18,14 @@ const Blog = ({ blog, user, deleteBlog, changeBlogLikes }) => {
     event.preventDefault()
     const updatedBlog = {
       ...blog,
-      likes: blog.likes + 1
+      likes: blog.likes + 1,
     }
     changeBlogLikes(blog.id, updatedBlog)
   }
 
   const removeBlog = (event) => {
     event.preventDefault()
-    deleteBlog(blog)  //deleteBlog function is defined in App.jsx and passed as a prop
+    deleteBlog(blog) //deleteBlog function is defined in App.jsx and passed as a prop
   }
 
   return (
@@ -36,9 +36,15 @@ const Blog = ({ blog, user, deleteBlog, changeBlogLikes }) => {
       </div>
 
       <div style={detailedBlogVisible}>
-        <p>{blog.title} {blog.author} <button onClick={() => setBlogVisibility(false)}>hide</button></p>
+        <p>
+          {blog.title} {blog.author}{' '}
+          <button onClick={() => setBlogVisibility(false)}>hide</button>
+        </p>
         <p>{blog.url}</p>
-        <p>likes {blog.likes}<button onClick={changeLikes}>like</button></p>
+        <p>
+          likes {blog.likes}
+          <button onClick={changeLikes}>like</button>
+        </p>
         <p>{blog.user ? blog.user.name : ''}</p>
         {/* {console.log('logged in user', user)}
         {console.log('bloguser' ,blog.user)} */}
