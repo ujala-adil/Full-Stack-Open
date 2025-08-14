@@ -57,7 +57,6 @@ test('clicking the button once shows blog details', async () => {
 })
 
 
-
 test('checking clicking the like button twice', async () => {
   const blog = {
     title: 'Component testing is done with react-testing-library',
