@@ -36,7 +36,7 @@ test('clicking the button once shows blog details', async () => {
   }
 
   // Blog component does not use a handler for toggling visibility, so no test needed for handler calls.
-  // const mockHandler = vi.fn() //he event handler is a mock function defined with Vitest.
+  // const mockHandler = vi.fn() //The event handler is a mock function defined with Vitest.
 
   const { container } = render(<Blog blog={blog} />)
   // screen.debug()
@@ -54,4 +54,26 @@ test('clicking the button once shows blog details', async () => {
 
   expect(detailedBlog).toHaveTextContent('https://reactpatterns.com/')
   expect(detailedBlog).toHaveTextContent(0)
+})
+
+
+
+test('checking clicking the like button twice', async () => {
+  const blog = {
+    title: 'Component testing is done with react-testing-library',
+    author: 'Mary Poppins',
+    url: 'https://reactpatterns.com/',
+    likes: 0
+  }
+
+  const mockHandler = vi.fn() //The event handler is a mock function defined with Vitest.
+
+  render(<Blog blog={blog} changeBlogLikes={mockHandler} />)
+
+  const user = userEvent.setup()
+  const button = screen.getByText('like')
+  await user.click(button)
+  await user.click(button)
+
+  expect(mockHandler.mock.calls).toHaveLength(2) //The expectation of the test uses toHaveLength to verify that the mock function has been called exactly once.
 })
