@@ -29,13 +29,13 @@ const Blog = ({ blog, user, deleteBlog, changeBlogLikes }) => {
   }
 
   return (
-    <div style={blogStyle}>
-      <div style={shortBlogVisible}>
+    <div style={blogStyle} className='blog'>
+      <div style={shortBlogVisible} className='short-blog'>
         {blog.title} {blog.author}
         <button onClick={() => setBlogVisibility(true)}>view</button>
       </div>
 
-      <div style={detailedBlogVisible}>
+      <div style={detailedBlogVisible} className='detailed-blog'>
         <p>
           {blog.title} {blog.author}{' '}
           <button onClick={() => setBlogVisibility(false)}>hide</button>
